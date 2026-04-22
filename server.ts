@@ -1,4 +1,5 @@
 import express from "express";
+import { createServer as createHttpServer } from "node:http";
 import { createServer as createViteServer } from "vite";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -846,6 +847,7 @@ async function startServer() {
   );
 
   const app = express();
+  const httpServer = createHttpServer(app);
   const statusSyncIntervalMs = Number(process.env.EVENT_STATUS_SYNC_MS ?? 60_000);
   const safeStatusSyncIntervalMs =
     Number.isFinite(statusSyncIntervalMs) && statusSyncIntervalMs > 0 ? statusSyncIntervalMs : 60_000;
@@ -2004,7 +2006,11 @@ async function startServer() {
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: {
+        middlewareMode: true,
+        // Reuse the app server so HMR does not need Vite's fallback websocket port.
+        hmr: process.env.DISABLE_HMR === "true" ? false : { server: httpServer },
+      },
       appType: "spa",
     });
     app.use(vite.middlewares);
@@ -2016,9 +2022,33 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-  });
+  try {
+    await new Promise<void>((resolve, reject) => {
+      const handleError = (error: Error) => {
+        httpServer.off("listening", handleListening);
+        reject(error);
+      };
+      const handleListening = () => {
+        httpServer.off("error", handleError);
+        resolve();
+      };
+
+      httpServer.once("error", handleError);
+      httpServer.once("listening", handleListening);
+      httpServer.listen(PORT, "0.0.0.0");
+    });
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "EADDRINUSE") {
+      throw new Error(
+        `Port ${PORT} is already in use. Stop the existing dev server or set PORT to an open port.`,
+        { cause: error }
+      );
+    }
+
+    throw error;
+  }
+
+  console.log(`Server running on http://localhost:${PORT}`);
 }
 
 startServer().catch((error) => {
