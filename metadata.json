@@ -1,0 +1,5 @@
+{
+  "name": "Eventify - Premium Event Attendance Platform",
+  "description": "A premium, animated event attendance platform with QR-based check-ins, real-time analytics, and secure registration.",
+  "requestFramePermissions": ["camera"]
+}

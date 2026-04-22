@@ -1,0 +1,26 @@
+I0329 00:26:12.118845   40936 load.go:31] Reloading schema and connectors...
+I0329 00:26:12.126786   40936 control.go:100] [projects/emulator/locations/emulator/services/eventify d783] UpdateResources(): done
+Main schema: sources: schema/schema.gql [1992B] 
+Connector "example": sources: example/mutations.gql [1243B] example/queries.gql [1801B] 
+I0329 00:26:12.135314   40936 codegen.go:101] [connector "example" javascriptSdk] Generating sources into "/Users/ridhamgupta805gmail.com/Documents/Todo Assignment/eventify/src/dataconnect-generated"
+I0329 00:26:12.140697   40936 codegen.go:101] [connector "example" adminSdk] Generating sources into "/Users/ridhamgupta805gmail.com/Documents/Todo Assignment/eventify/src/dataconnect-admin-generated"
+I0329 00:26:12.143061   40936 collector.go:107] schema extensions wrote into "/Users/ridhamgupta805gmail.com/Documents/Todo Assignment/eventify/dataconnect/.dataconnect/schema"
+Generated sources: prelude.gql [80888B] main/mutation.gql [13679B] main/implicit.gql [1261B] main/input.gql [28927B] main/relation.gql [14318B] main/query.gql [5099B] 
+I0329 00:26:12.144295   40936 collector.go:107] connector "example" javascriptSdk wrote into "/Users/ridhamgupta805gmail.com/Documents/Todo Assignment/eventify/src/dataconnect-generated"
+Generated sources: react/index.d.ts [3961B] react/package.json [460B] react/index.cjs.js [3439B] .guides/setup.md [1682B] esm/package.json [17B] README.md [41235B] react/esm/index.esm.js [3269B] .guides/config.json [236B] index.d.ts [8350B] index.cjs.js [5633B] react/README.md [48299B] .guides/usage.md [3489B] react/esm/package.json [17B] esm/index.esm.js [5133B] package.json [853B] 
+I0329 00:26:12.145453   40936 installsdk.go:55] Package @dataconnect/generated is already installed. Skipping installation
+I0329 00:26:12.145850   40936 collector.go:107] connector "example" adminSdk wrote into "/Users/ridhamgupta805gmail.com/Documents/Todo Assignment/eventify/src/dataconnect-admin-generated"
+Generated sources: package.json [632B] index.d.ts [7666B] esm/index.esm.js [2978B] esm/package.json [17B] index.cjs.js [3271B] 
+I0329 00:26:12.146550   40936 installsdk.go:55] Package @dataconnect/admin-generated is already installed. Skipping installation
+I0329 00:26:12.146559   40936 load.go:109] Finished reloading
+I0329 00:26:12.146767   40936 dev.go:104] Listening on address (HTTP + gRPC): 127.0.0.1:9399
+I0329 00:26:12.146834   40936 dev.go:104] Listening on address (HTTP + gRPC): [::1]:9399
+I0329 00:26:14.520906   40936 control.go:100] [projects/emulator/locations/emulator/services/eventify 02a7] UpdateResources(): done
+Main schema: sources: schema/schema.gql [1992B] 
+Connector "example": sources: example/mutations.gql [1243B] example/queries.gql [1801B] 
+I0329 00:26:14.525463   40936 configure_emulator.go:21] ConfigureEmulator successed
+Request: service_id: "eventify"
+connection_string: "postgres://127.0.0.1:5432/fdcdb?sslmode=disable"
+database: "fdcdb"
+
+Response: 

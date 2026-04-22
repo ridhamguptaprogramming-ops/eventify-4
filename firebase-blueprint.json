@@ -1,0 +1,61 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "user"] },
+        "isVerified": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "Event": {
+      "title": "Event",
+      "description": "Event details",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "date": { "type": "string", "format": "date-time" },
+        "venue": { "type": "string" },
+        "schedule": { "type": "array", "items": { "type": "object" } },
+        "speakers": { "type": "array", "items": { "type": "object" } }
+      },
+      "required": ["id", "title", "date"]
+    },
+    "Registration": {
+      "title": "Registration",
+      "description": "User registration for an event",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "eventId": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "confirmed"] },
+        "attended": { "type": "boolean" },
+        "attendedAt": { "type": "string", "format": "date-time" },
+        "qrCode": { "type": "string" }
+      },
+      "required": ["uid", "eventId", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/events/{eventId}": {
+      "schema": "Event",
+      "description": "Events"
+    },
+    "/registrations/{registrationId}": {
+      "schema": "Registration",
+      "description": "Event registrations"
+    }
+  }
+}

@@ -1,0 +1,68 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    // Collection: users
+    // Fields: uid (string), email (string), displayName (string), role (string), isVerified (bool), createdAt (timestamp)
+    //
+    // Collection: events
+    // Fields: id (string), title (string), description (string), date (timestamp), venue (string), schedule (list), speakers (list)
+    //
+    // Collection: registrations
+    // Fields: uid (string), eventId (string), status (string), attended (bool), attendedAt (timestamp), qrCode (string)
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          (request.auth.token.email == "ridham.gupta.programming@gmail.com" && request.auth.token.email_verified == true));
+    }
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'email', 'role']) &&
+             data.uid is string && data.email is string &&
+             data.role in ['admin', 'user'] &&
+             data.email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+    function isValidEvent(data) {
+      return data.keys().hasAll(['id', 'title', 'date']) &&
+             data.id is string && data.title is string &&
+             data.title.size() < 100;
+    }
+    function isValidRegistration(data) {
+      return data.keys().hasAll(['uid', 'eventId', 'status']) &&
+             data.uid is string && data.eventId is string &&
+             data.status in ['pending', 'confirmed'];
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isAuthenticated() && isOwner(userId) && isValidUser(request.resource.data) && (request.resource.data.role == 'user' || isAdmin());
+      allow update: if isAuthenticated() && (isOwner(userId) || isAdmin()) && isValidUser(request.resource.data) && (request.resource.data.role == resource.data.role || isAdmin());
+    }
+
+    match /events/{eventId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidEvent(request.resource.data);
+    }
+
+    match /registrations/{registrationId} {
+      allow read: if isAuthenticated() && (request.auth.uid == resource.data.uid || isAdmin());
+      allow create: if isAuthenticated() && request.auth.uid == request.resource.data.uid && isValidRegistration(request.resource.data);
+      allow update: if isAdmin() && isValidRegistration(request.resource.data);
+    }
+  }
+}
